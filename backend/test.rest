@@ -1,0 +1,12 @@
+###
+
+GET http://localhost:13000/api/course/1
+
+###
+
+POST http://localhost:13000/api/course/
+Content-Type: application/json
+
+{
+    "title": "test"
+}

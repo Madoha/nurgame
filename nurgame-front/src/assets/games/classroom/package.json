@@ -1,0 +1,14 @@
+{
+  "dependencies": {
+    "@tweenjs/tween.js": "^25.0.0",
+    "cannon": "^0.6.2",
+    "fast-glob": "^3.3.2",
+    "gsap": "^3.12.5",
+    "os": "^0.1.2",
+    "three": "^0.170.0",
+    "vite-plugin-commonjs": "^0.10.3"
+  },
+  "devDependencies": {
+    "vite": "^5.4.11"
+  }
+}

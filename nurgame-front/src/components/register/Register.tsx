@@ -42,7 +42,7 @@ function Register() {
             <div className="register__wrapper">
                 <div className="register__text">
                     <a href="/" className="register__text-title">
-                        <img src="src/assets/images/loginpagelogo.svg" alt="Logo"/>
+                        <img src="src/assets/images/nurgameLogo.png" alt="Logo" style={{ width: '10rem' }}/>
                     </a>
                     <h1>India's First eCommerce</h1>
                     <h2>and Applied Marketing Academy</h2>
@@ -54,7 +54,7 @@ function Register() {
                 <form className="register__form" onSubmit={handleSubmit}>
                     <div className="register__form-wrapper">
                         <div className="register__form-title">
-                            <img src="src/assets/images/loginformlogo.svg" alt="Logo"/>
+                            <img src="src/assets/images/nurgameLogo.png" alt="Logo"/>
                             <h1>Learner Register</h1>
                             <p>{step === 1 ? "Step 1: Basic Information" : "Step 2: Account Details"}</p>
                         </div>

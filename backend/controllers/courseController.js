@@ -13,6 +13,10 @@ const { sendAchievementNotification } = require('../utils/socket');
 const AchievementService = require('../services/achievements/achievementService');
 const ACHIEVEMENTS = require('../enum/achievements');
 const CourseService = require('../services/courseService');
+const PDFDocument = require('pdfkit');
+const user = require('../db/models/user');
+const fs = require('fs');
+const path = require('path')
 
 const create = catchAsync(async (req, res, next) => {
     const newCourse = course.create(req.body);
@@ -178,16 +182,12 @@ const getModuleTests = catchAsync(async (req, res, next) => {
         }
 
         testsWithDetails.push({
-            id: currentTest.id,
-            type: currentTest.type,
             questions: questionWithAnswers
         });
     }
 
     res.json({
-        success: true,
-        message: 'Tests retrieved successfully',
-        tests: testsWithDetails
+        tests: testsWithDetails[0].questions
     });
 });
 
@@ -262,35 +262,70 @@ const getUserCourses = catchAsync(async (req, res, next) => {
     });
 });
 
+const getQuestion = catchAsync(async (req, res, next) => {
+    const { courseId, moduleId, questionId } = req.params;
+
+    const currentCourse = await course.findByPk(courseId);
+    if (!currentCourse) return next(new AppError('Coruse not found', 404));
+
+    const currentModule = await courseModule.findOne({where: { id: moduleId, courseId }});
+    if (!currentModule) return next(new AppError('Module not found in the specified course', 404));
+
+    const currentTests = await test.findAll({
+        where: { courseModuleId: moduleId }
+    });
+
+    if (!currentTests || currentTests.length === 0) {
+        return res.status(200).json({
+            success: true,
+            message: 'No tests found for this module',
+            tests: []
+        });
+    }
+    const currentQuestion = await question.findByPk({where: {questionId}}) ;
+
+    res.json({
+        success: true,
+        tests: currentQuestion
+    });
+});
 
 // update for mcq open interactive and also if multiple tests ?? then handle it
 const updateProgress = catchAsync(async (req, res, next) => {
     const { courseId, moduleId } = req.params;
     const userId = req.user.id;
     const { testScore } = req.body;
+    
+    // Преобразуем moduleId в integer (int)
+    const moduleIdInt = parseInt(moduleId, 10);
+    if (isNaN(moduleIdInt)) return next(new AppError('Invalid module ID', 400));
+
+    console.log('bdbd', testScore);
 
     const currentCourse = await course.findByPk(courseId);
     if (!currentCourse) return next(new AppError('Course not found', 404));
 
-    const currentModule = await courseModule.findOne({where: { id: moduleId, courseId }});
+    const currentModule = await courseModule.findOne({where: { id: moduleIdInt, courseId }});  // Поменяли на moduleIdInt
     if (!currentModule) return next(new AppError('Module not found in the specified course', 404));
 
-    const progress = await userCourseProgress.findOne({where: { userId, courseId }});
+    let progress = await userCourseProgress.findOne({where: { userId, courseId }});
 
     if (!progress) {
-        throw new AppError('Прогресс по курсу не найден', 404);
+        progress = await userCourseProgress.create({
+            userId,
+            courseId
+        })
     }
 
-    if (progress.completedModules.include(moduleId)){
+    if (progress.completedModules.includes(moduleIdInt)){
         return res.json({success: true, message: 'already completed'});
     }
-
-    progress.completedModules.push(moduleId);
-    progress.score += testScore;
+    progress.score += testScore;  // Поменяли на testScoreFloat
+    progress.completedModules = [...progress.completedModules, moduleIdInt];
 
     let coinsBonus = req.userStreak >= 5 ? 5 : 0;
 
-    // if (testScore >= 80) { } 
+    // if (testScoreFloat >= 80) { } 
     progress.coinsEarned += (1 + coinsBonus);
 
     if (progress.completedModules.length === progress.totalModules) {
@@ -301,28 +336,40 @@ const updateProgress = catchAsync(async (req, res, next) => {
     return res.json({success: true, message: 'progress updated'})
 });
 
+
+const getProgress= catchAsync(async (req, res, next) => {
+    const { courseId } = req.params;
+    const userId = 3;
+    let progress = await userCourseProgress.findOne({where: { userId, courseId }});
+    return res.json(progress)
+});
+
 const completeCourse = catchAsync(async (req, res, next) => {
     const { courseId } = req.params;
     const userId = req.user.id;
 
+    const currentUser = await user.findOne({where: {id: userId}});
+
     const currentCourse = await course.findByPk(courseId);
     if (!currentCourse) return next(new AppError('Coruse not found', 404));
 
-    const progress = await progress.findOne({where: { courseId, userId }});
+    const currentProgress = await userCourseProgress.findOne({where: { courseId, userId }});
 
-    if (!progress) return next(new AppError('please start the course and complete all modules', 400));
+    if (!currentProgress) return next(new AppError('please start the course and complete all modules', 400));
 
-    if (progress.completedModules.length !== progress.totalModules) return next(new AppError('not allowed', 400));
+    if (currentProgress.completedModules.length !== 4) return next(new AppError('not allowed', 400));
 
     // todo coins course migrations
-    const userScore = progress.score;
-    const allScoreCount = await getMaxScoreForCourse(courseId);
+    const userScore = currentProgress.score;
+    // const allScoreCount = await getMaxScoreForCourse(courseId);
+    const allScoreCount = 44;
     const leastScore = allScoreCount * 0.8;
-    const coinsEarned = progress.coinsEarned;
-    user.coins += coinsEarned;
-    if (!(userScore >= leastScore)){
-        throw new AppError('Ваша средняя оценка меньше 80 процентов, у вас нет прав закончить курс', 400); 
-    }
+    const coinsEarned = currentProgress.coinsEarned;
+    currentUser.coins += coinsEarned;
+    await currentUser.save()
+    // if (!(userScore >= leastScore)){
+    //     throw new AppError('Ваша средняя оценка меньше 80 процентов, у вас нет прав закончить курс', 400); 
+    // }
 
     const result = await certificate.create({
         score: userScore,
@@ -341,7 +388,51 @@ const completeCourse = catchAsync(async (req, res, next) => {
         });
     }
 
-    await user.save();
+    await currentUser.save();
+
+    const doc = new PDFDocument();
+
+// Путь для папки с сертификатами
+const certificatesDir = path.join(__dirname, '../../certificates');
+
+// Проверка и создание папки, если она не существует
+if (!fs.existsSync(certificatesDir)) {
+    fs.mkdirSync(certificatesDir, { recursive: true });
+}
+
+// Путь для сохранения сертификата
+const certificatePath = path.join(certificatesDir, `certificate_${currentUser.id}_${courseId}.pdf`);
+
+// Поток для записи PDF
+const writeStream = fs.createWriteStream(certificatePath);
+writeStream.on('error', (err) => {
+    console.error('Error writing the PDF:', err);
+});
+
+doc.pipe(writeStream);
+
+// Функция для безопасного центрирования текста
+function drawCenteredText(doc, text, fontSize, y) {
+    const textWidth = doc.widthOfString(text);
+    const pageWidth = doc.page.width;
+    const x = (pageWidth - textWidth) / 2;  // Вычисление X для центрирования текста
+
+    doc.fontSize(fontSize).text(text, x, y);
+}
+
+// Добавляем текст в сертификат
+doc.fontSize(25);
+drawCenteredText(doc, 'Certificate of completion of the course', 25, 100);
+doc.moveDown();
+drawCenteredText(doc, `Congratulations, ${currentUser.firstName} ${currentUser.lastName}!`, 20, 140);
+doc.moveDown();
+drawCenteredText(doc, `You have successfully completed the course: fight agains corruption`, 18, 180);
+doc.moveDown();
+drawCenteredText(doc, `Completion date: ${new Date().toLocaleDateString()}`, 12, 220);
+
+// Завершаем создание документа
+doc.end();
+
     return res.json({status: true, score: result.score, coins: coinsEarned})
 });
 
@@ -385,6 +476,9 @@ module.exports = {
     getStarted, 
     getModules,
     getModuleLessons,
+    getQuestion,
     getUserCourses,
     openQuestionAnswerCheck,
+    getQuestion,
+    getProgress
 };

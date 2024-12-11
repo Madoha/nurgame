@@ -30,7 +30,11 @@ const courseModule = sequelize.define('courseModules', {
   updatedAt: {
     allowNull: false,
     type: DataTypes.DATE
-  }
+  },
+  bgColor: {
+    allowNull: true,
+    type: DataTypes.STRING
+  },
 }, {
   modelName: 'courseModule',
   freezeTableName: true

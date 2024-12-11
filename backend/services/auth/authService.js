@@ -67,7 +67,7 @@ class AuthService {
         const googleEmail = data.email;
         const roleUp = await this.getRoleByName(process.env.GOOGLE_AUTH_USER_ROLE)
 
-        const currentUser = await user.findOne({where: {email: googleEmail }});
+        let currentUser = await user.findOne({where: {email: googleEmail }});
         if (!currentUser){
             currentUser = await user.create({
                 googleId: data.id.toString(),

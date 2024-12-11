@@ -65,17 +65,17 @@ const Login = () => {
             <div className="login__wrapper">
                 <div className="login__text">
                     <a href="/" className="login__text-title">
-                        <img src="src/assets/images/loginpagelogo.svg" alt="Logo" />
+                        <img src="src/assets/images/nurgameLogo.png" alt="Logo" style={{ width: '10rem' }}/>
                     </a>
-                    <h1>India's First eCommerce</h1>
-                    <h2>and Applied Marketing Academy</h2>
+                    <h1>Fight against corruption</h1>
+                    <h2>and learning Academy</h2>
                     <p>Industry backed programs designed by professionals to accelerate your digital career.</p>
                     {error && <p className="login__error">{error}</p>}
                 </div>
                 <form className="login__form" onSubmit={handleSubmit}>
                     <div className="login__form-wrapper">
                         <div className="login__form-title">
-                            <img src="src/assets/images/loginformlogo.svg" alt="Logo" />
+                            <img src="src/assets/images/nurgameLogo.png" alt="Logo" />
                             <h1>Learner Login</h1>
                             <p>Sign In to your Account</p>
                         </div>

@@ -31,7 +31,11 @@ module.exports = {
       updatedAt: {
         allowNull: false,
         type: Sequelize.DATE
-      }
+      },
+      icon: {
+        allowNull: true,
+        type: Sequelize.STRING
+      },
     });
   },
   async down(queryInterface, Sequelize) {

@@ -67,10 +67,10 @@ interface ActivityCardProps {
 // Dummy Data for Demonstration Purposes
 
 const mockCoursesData: CoursesData = {
-    completed: 3,
-    inProgress: 2,
-    certificatesEarned: 5,
-    achievements: 10,
+    completed: 0,
+    inProgress: 0,
+    certificatesEarned: 0,
+    achievements: 1,
 };
 
 const mockCoursesDataIcon = {
@@ -83,12 +83,12 @@ const mockCoursesDataIcon = {
 const mockUnfinishedCourses: UnfinishedCourse[] = [
     {
         id: 1,
-        title: "Digital Marketing Pro: Mastering the Online Landscape",
+        title: "Игра гонка",
         duration: "72 min",
         instructor: "Dianne Edwards"
     },
-    {id: 2, title: "Digital Dynamo: Unleash Your Online Potential", duration: "82 min", instructor: "Dianne Edwards"},
-    {id: 3, title: "Digital Dynamo: Unleash Your Online Potential", duration: "91 min", instructor: "Dianne Edwards"},
+    {id: 2, title: "Игра стеклами", duration: "82 min", instructor: "Dianne Edwards"},
+    {id: 3, title: "Игра учитель", duration: "91 min", instructor: "Dianne Edwards"},
 ];
 
 const mockPopularCourses: PopularCourse[] = [
@@ -152,7 +152,6 @@ const Home: React.FC = () => {
                     // Fetch user data from your API using axiosConfig
                     const userResponse = await axiosConfig.get(`/user/${decodedToken.id}`);
                     setUserData(userResponse.data.data);
-                    console.log(userResponse.data.data);
                     // Fetch other necessary data
                     // const coursesResponse = await axiosConfig.get("/courses");
                     // const unfinishedResponse = await axiosConfig.get("/unfinishedCourses");
@@ -231,13 +230,13 @@ const Home: React.FC = () => {
                     <div className="dashboard__part1-stats">
                         {coursesData && (
                             <>
-                                <StatCard title="Courses Completed" count={coursesData.completed} progress={50}
+                                <StatCard title="Законченные модули" count={coursesData.completed} progress={0}
                                           icon={mockCoursesDataIcon.icon1}/>
-                                <StatCard title="Courses in Progress" count={coursesData.inProgress} progress={40}
+                                <StatCard title="Модули в прогрессе" count={coursesData.inProgress} progress={0}
                                           icon={mockCoursesDataIcon.icon2}/>
-                                <StatCard title="Certificates Earned" count={coursesData.certificatesEarned}
-                                          progress={10} icon={mockCoursesDataIcon.icon3}/>
-                                <StatCard title="Achievements" count={coursesData.achievements} progress={70}
+                                <StatCard title="Получен сертификат" count={coursesData.certificatesEarned}
+                                          progress={0} icon={mockCoursesDataIcon.icon3}/>
+                                <StatCard title="Достижения" count={coursesData.achievements} progress={10}
                                           icon={mockCoursesDataIcon.icon4}/>
                             </>
                         )}
@@ -248,7 +247,7 @@ const Home: React.FC = () => {
                     <div className="dashboard__part2-header">
                         <div className="dashboard__part2-section">
                             <div className="dashboard__part2-left">
-                                <h3>Your Unfinished Courses</h3>
+                                <h3>Наши мини игры</h3>
                                 <button>See All</button>
                             </div>
                             <div className="dashboard__part2-course-list">
@@ -327,10 +326,10 @@ const StatCard: React.FC<StatCardProps> = ({icon, title, count, progress}) => (
 const UCourseCard: React.FC<UCourseCardProps> = ({ucourse}) => (
     <div className="course-card">
         <div className="course-card__content">
-            <img src="src/assets/images/yourAva.svg" alt="avatar"/>
-            <p className="course-card__instructor">{ucourse.instructor}</p>
+            {/* <img src="src/assets/images/yourAva.svg" alt="avatar"/> */}
+            {/* <p className="course-card__instructor">{ucourse.instructor}</p> */}
             <p className="course-card__details">
-                {ucourse.duration}
+                Длительность {ucourse.duration}
             </p>
         </div>
         <div className="course-card__description">

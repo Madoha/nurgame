@@ -16,10 +16,8 @@ export const Links = {
     forgotPassword: "/forgot-password",
     home: "/",
     courses: "/courses",
-    lesson: "/lesson",
-
-    test: "/testerArea",
-    testLogin: "/testLogin",
+    lesson: "/course/3/module/:moduleId/lesson/:lessonId",
+    test: "/course/3/module/:moduleId/tests",
 };
 
 export interface IUser {
@@ -51,3 +49,51 @@ export interface IDecodedToken {
     exp: number; // Token expiration timestamp
 }
 
+export interface Lessons {
+    id: number;
+    title: string;
+    content: string;
+    type: string;
+    videoUrl?: string;
+    courseModuleId: number;
+    icon: string;
+    locked: boolean;
+    completed: boolean;
+}
+
+export interface Modules {
+    id: number;
+    title: string;
+    description: string;
+    courseId: number;
+    bgColor: string;
+    lessons: Lessons[];
+}
+
+export interface Course {
+    id: number;
+    title: string;
+    description: string;
+    modules: Modules[];
+}
+
+export interface Answers {
+    id: number;
+    text: string;
+    isCorrect: boolean;
+    questionId: number;
+}
+
+export interface Questions {
+    id: number;
+    text: string;
+    answers: Answers[];
+}
+
+export interface Test {
+    questions: Questions[];
+}
+
+export interface Score {
+    testScore: number;
+}

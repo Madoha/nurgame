@@ -34,7 +34,11 @@ const lesson = sequelize.define('lessons', {
   updatedAt: {
     allowNull: false,
     type: DataTypes.DATE
-  }
+  },
+  icon: {
+    allowNull: true,
+    type: DataTypes.STRING
+  },
 }, {
   freezeTableName: true,
   modelName: 'lessons'

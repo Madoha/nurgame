@@ -18,16 +18,11 @@ const getProfile = catchAsync(async (req, res, next) => {
     const gettingAchivement = true;
     if (gettingAchivement){
         sendAchievementNotification({
-          id: 1,
-            name: 'gfdsgfdg',
-            description: 'sdjfglsnlkgnksng;',
-            reward: 50,
-            icon: 'gkgkgnkfgnkfkn'
-            // id: gettingAchivement.id,
-            // name: gettingAchivement.name,
-            // description: gettingAchivement.description,
-            // reward: gettingAchivement.reward,
-            // icon: gettingAchivement.icon
+            id: gettingAchivement.id,
+            name: gettingAchivement.name,
+            description: gettingAchivement.description,
+            reward: gettingAchivement.reward,
+            icon: gettingAchivement.icon
         });
     }
 

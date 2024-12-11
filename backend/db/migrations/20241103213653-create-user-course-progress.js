@@ -30,7 +30,7 @@ module.exports = {
         defaultValue: 0
       },
       score: {
-        type: Sequelize.FLOAT
+        type: Sequelize.INTEGER
       },
       createdAt: {
         allowNull: false,

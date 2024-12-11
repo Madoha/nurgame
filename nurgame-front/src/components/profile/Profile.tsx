@@ -25,7 +25,7 @@ interface Achievement {
     icon: string;
 }
 
-const socket = io('http://192.168.0.103:4001');
+const socket = io('http://localhost:4001');
 
 const Profile: React.FC = () => {
     const [userInfo, setUserInfo] = useState<IUser | null>(null);
@@ -36,17 +36,17 @@ const Profile: React.FC = () => {
     const [achievement, setAchievement] = useState<Achievement>({} as Achievement);
 
     const courses: Course[] = [
-        {title: 'E-commerce Excellence: Selling Smarter Online', instructor: 'Andy Stevanus'},
-        {title: 'Influencer Marketing Insider', instructor: 'Brian Braun'},
-        {title: 'Digital Dynamo: Unleash Your Online Potential', instructor: 'Chyntia Laura'},
-        {title: 'SEO Wizardry: Ranking High in the Digital World', instructor: 'Dennise Khan'},
+        {title: 'Классный модуль', instructor: 'Devs'},
+        {title: '...', instructor: 'Devs'},
+        {title: '...', instructor: 'Devs'},
+        {title: '...', instructor: 'Devs'},
     ];
 
     const messages: Message[] = [
-        {sender: 'Chloe Jess', text: 'I have done my task last week..', time: '15min ago', read: true},
-        {sender: 'Geex UI Design Team', text: 'Don’t forget our daily report gu...', time: '2h ago', read: false},
-        {sender: 'Roberto', text: 'Last week, do you remember?', time: '02:45 AM', read: true},
-        {sender: 'Lisa Blekcurrent', text: 'My boss give me that task last..', time: '2 min ago', read: false},
+        {sender: 'Посмотри свой профиль', text: 'Уззнал о себе', time: '5мин назад', read: true},
+        {sender: 'Прочее', text: 'Прочее', time: '2025--xx--xx', read: false},
+        {sender: 'Прочее', text: 'Прочее', time: '2025--xx--x', read: false},
+        {sender: 'Прочее', text: 'Прочее', time: '2025--xx--xx', read: false},
     ];
 
     const handleSubmit = async (e: FormEvent) => {
@@ -64,7 +64,7 @@ const Profile: React.FC = () => {
 
             axiosConfig.defaults.headers.common['Authorization'] = `Bearer ${token}`;
 
-            const response = await axiosConfig.post('http://localhost:4001/api/auth/change-password/', {
+            const response = await axiosConfig.post('/auth/change-password/', {
                 oldPassword,
                 newPassword,
             });
@@ -140,6 +140,7 @@ const Profile: React.FC = () => {
                     ...prevUserInfo,
                     ...response.data.data, // Merge data from API
                 }));
+                console.log('res', response)
 
             } catch (err) {
                 console.error('Error fetching user profile:', err);
@@ -309,8 +310,8 @@ const Profile: React.FC = () => {
                     <div className="profile__part2-left">
                         <div className="profile__part2-left-courseText">
                             <div className="profile__part2-left-titles">
-                                <h1>Subscribed Courses</h1>
-                                <p>Maiores dicta atque dolorem temporibus</p>
+                                <h1>Сообщение</h1>
+                                <p>Твои сообщение</p>
                             </div>
                             <button><img src='src/assets/images/addIcon.svg' alt="Add"/></button>
                         </div>
@@ -335,8 +336,8 @@ const Profile: React.FC = () => {
                     <div className="profile__part2-right">
                         <div className="profile__part2-right-courseText">
                             <div>
-                                <h1>Latest Message</h1>
-                                <p>Maiores dicta atque dolorem temporibus</p>
+                                <h1>Достижения</h1>
+                                <p>Посмотри какие достижения ты получил</p>
                             </div>
                             <button><img src='src/assets/images/addIcon.svg' alt="Add"/></button>
                         </div>

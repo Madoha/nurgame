@@ -1,129 +1,119 @@
-import React, { useState, useEffect } from "react";
+import {useParams, Link} from "react-router-dom";
+import {useEffect, useState} from "react";
+import {Lessons} from "../../../models/Models.tsx";
 import axiosConfig from "../../../api/axiosConfig.ts";
-import DOMPurify from "dompurify";
 
-const Lesson: React.FC = () => {
-    const [lessons, setLessons] = useState<{ id: number; title: string; content: string; videoUrl: string }[]>([]);
-    const [currentLesson, setCurrentLesson] = useState<{
-        title: string;
-        content: string;
-        videoUrl: string;
-    } | null>(null);
-    const [selectedLessonId, setSelectedLessonId] = useState<number | null>(null);
+const LessonPage = () => {
+    const {moduleId, lessonId} = useParams<{ moduleId: string; lessonId: string }>();
+    const [lesson, setLesson] = useState<Lessons | null>(null);
     const [error, setError] = useState<string>("");
     const [loading, setLoading] = useState<boolean>(true);
+    const [comments, setComments] = useState<string[]>([]);
+    const [newComment, setNewComment] = useState<string>("");
 
     useEffect(() => {
-        const fetchLessons = async () => {
-            setLoading(true);
+        const fetchLesson = async () => {
             try {
-                const response = await axiosConfig.get("/course/3/modules/3/lessons");
-                const data = response.data;
-                console.log("FetchLessons data:", data);
+                axiosConfig.defaults.headers.common["ngrok-skip-browser-warning"] = "true";
 
-                setLessons(data);
+                const response = await axiosConfig.get(
+                    `/course/3/modules/${moduleId}/lessons/`
+                );
 
-                if (data.length > 0) {
-                    setCurrentLesson({
-                        title: data[0].title,
-                        content: data[0].content,
-                        videoUrl: data[0].videoUrl,
-                    });
-                    setSelectedLessonId(data[0].id);
+                const lessonData = response.data.find(
+                    (lesson: Lessons) => lesson.id.toString() === lessonId
+                );
+
+                if (!lessonData) {
+                    throw new Error("Lesson not found");
                 }
+
+                setLesson(lessonData);
             } catch (err) {
-                console.error("Error fetching lessons:", err);
-                setError("Failed to load lessons. Please try again.");
+                console.error("Error fetching lesson:", err);
+                setError("Failed to load lesson. Please try again.");
             } finally {
                 setLoading(false);
             }
         };
 
-        fetchLessons();
-    }, []);
+        fetchLesson();
+    }, [moduleId, lessonId]);
 
-    const handleLessonSelect = (lesson: { id: number; title: string; content: string; videoUrl: string }) => {
-        setCurrentLesson(lesson);
-        setSelectedLessonId(lesson.id);
+    const handleAddComment = () => {
+        if (newComment.trim()) {
+            setComments((prevComments) => [...prevComments, newComment.trim()]);
+            setNewComment("");
+        }
     };
 
+    if (loading) return (<div className="loading-overlay">
+        <p>Загрузка урока...</p>
+    </div>);
+    if (error) return <p className="error-message">{error}</p>;
+    if (!lesson) return <p>Урок не найден</p>;
+
     return (
-        <div className="lesson">
-            {error && <p className="lesson__error">{error}</p>}
-            {loading ? (
-                <p>Loading lessons...</p>
-            ) : (
-                <>
-                    <div className="lesson__left">
-                        {/* Video Section */}
-                        {currentLesson && (
-                            <div className="lesson__video-section">
-                                <video
-                                    controls
-                                    className="lesson__video"
-                                    src={currentLesson.videoUrl}
-                                    poster="path_to_poster.jpg"
-                                ></video>
-                                <div className="lesson__details">
-                                    <h2>{currentLesson.title}</h2>
-                                    <div
-                                        className="lesson__details-content"
-                                        dangerouslySetInnerHTML={{
-                                            __html: DOMPurify.sanitize(currentLesson.content),
-                                        }}
-                                    ></div>
+        <div className="lesson-page">
+            <h1 className="lesson__title">{lesson.title}</h1>
+
+            <div className="lessonLeft">
+                {/* Video Section */}
+                <div className="lesson__video-section">
+                {lesson.type === "video" && (
+                        <iframe
+                            src={lesson.videoUrl}
+                            title={lesson.title}
+                            className="lesson__video"
+                            allowFullScreen
+                        ></iframe>
+                    )}
+                    {lesson.type === "interactive" && (
+                        // If the game is local, use a <Link> to navigate to the game page
+                        <Link to={lesson.content!} className="game-button">
+                            Go to Game
+                        </Link>
+                    )}
+                </div>
+                {/* Comment Section */}
+                <div className="lesson__comments-section">
+                    <h2>Комментарии</h2>
+                    <div className="lesson__comments">
+                        {comments.length > 0 ? (
+                            comments.map((comment, index) => (
+                                <div key={index} className="lesson__comment">
+                                    {comment}
                                 </div>
-                            </div>
+                            ))
+                        ) : (
+                            <p>Комментариев пока нет. Оставляйте комментарии первыми!</p>
                         )}
-
-                        {/* Reviews Section */}
-                        <div className="lesson__reviews">
-                            <h3>Reviews</h3>
-                            <form
-                                className="lesson__form"
-                                onSubmit={(e) => {
-                                    e.preventDefault();
-                                    const comment = (e.target as any).elements.comment.value;
-                                    alert(`Review Submitted: ${comment}`);
-                                    (e.target as any).reset();
-                                }}
-                            >
-                                <textarea
-                                    name="comment"
-                                    placeholder="Leave a comment"
-                                    className="lesson__textarea"
-                                ></textarea>
-                                <button type="submit" className="lesson__submit-button">
-                                    Publish review
-                                </button>
-                            </form>
-                        </div>
                     </div>
-
-                    <div className="lesson__right">
-                        {/* Lessons List */}
-                        <div className="lesson__sidebar">
-                            <h3>Lessons</h3>
-                            <ul className="lesson__list">
-                                {lessons.map((lesson) => (
-                                    <li
-                                        key={lesson.id}
-                                        className={`lesson__list-item ${
-                                            lesson.id === selectedLessonId ? "selected" : ""
-                                        }`}
-                                        onClick={() => handleLessonSelect(lesson)}
-                                    >
-                                        <span>{lesson.title}</span>
-                                        <input type="checkbox" className="lesson__checkbox" />
-                                    </li>
-                                ))}
-                            </ul>
-                        </div>
+                    <div className="lesson__add-comment">
+                    <textarea
+                        value={newComment}
+                        onChange={(e) => setNewComment(e.target.value)}
+                        placeholder="Напишите комментарий..."
+                        className="lesson__comment-input"
+                    ></textarea>
+                        <button onClick={handleAddComment} className="lesson__comment-button">
+                            Добавить комментарий
+                        </button>
                     </div>
-                </>
-            )}
+                </div>
+            </div>
+
+            {/* Lesson Details */}
+            <div className="lesson__details">
+                <h2>Подробности урока</h2>
+                {/* Render Content */}
+                <div
+                    className="lesson__content"
+                    dangerouslySetInnerHTML={{__html: lesson.content}}
+                ></div>
+            </div>
         </div>
     );
 };
 
-export default Lesson;
+export default LessonPage;

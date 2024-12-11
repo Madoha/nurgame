@@ -25,7 +25,7 @@ const userCourseProgress = sequelize.define('userCourseProgresses', {
     type: DataTypes.INTEGER
   },
   score: {
-    type: DataTypes.FLOAT
+    type: DataTypes.INTEGER
   },
   coinsEarned: {
     type: DataTypes.INTEGER,

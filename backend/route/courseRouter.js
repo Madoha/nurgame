@@ -14,7 +14,9 @@ const {
     getStarted, 
     getModules,
     getModuleLessons,
-    openQuestionAnswerCheck
+    openQuestionAnswerCheck,
+    getQuestion,
+    getProgress
 } = require('../controllers/courseController');
 const authentication = require('../middlewares/authMiddleware');
 const streakCheck = require('../middlewares/streakMiddleware');
@@ -50,6 +52,10 @@ router.route('/:courseId/modules/:moduleId/lessons')
 router.route('/:courseId/modules/:moduleId/tests')
     .post(addTests)
     .get(getModuleTests);
+
+router.route('/:courseId/progress').get(getProgress)
+
+router.route('/:courseId/modules/:moduleId/tests/:questionId/questions').get(getQuestion);
 
 router.route('/:courseId/modules/:moduleId/test/:testId').post(addQuestionsAndAnswers);
 

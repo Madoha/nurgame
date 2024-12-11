@@ -7,8 +7,10 @@ services:
       POSTGRES_DB: nurgame_db
     ports:
       - 5432:5432
+
   app:
-    image: my-node-app
+    build:
+      context: .
     environment:
       DB_USERNAME: postgres
       DB_PASSWORD: postgres
@@ -19,6 +21,8 @@ services:
       - 13000:4001
     depends_on:
       - db
+    command: sh -c "npm run migrate-and-start"
+
 networks:
   default:
     driver: bridge

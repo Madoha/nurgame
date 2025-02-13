@@ -66,48 +66,39 @@
 ## Изображения  
 
 ### Страница авторизаций  
-*Страница авторизаций*
 ![image](https://github.com/user-attachments/assets/f2a425b4-452c-4bd2-8603-d8373a38fb6e)
 
 
 ### Главная страница (не авторизован)  
-*Главная страница (не авторизован)*  
 ![image](https://github.com/user-attachments/assets/d140e28a-0412-48c1-9c5b-bc9fe523725e)
 
 
 ### Страница пользователя и функционалы  
-*Страница пользователя]*
 ![image](https://github.com/user-attachments/assets/293e2977-b53c-4049-a17e-8bc0074aa4bd)
 ![image](https://github.com/user-attachments/assets/9d53e505-efa3-4a16-a529-62ec394110ad)
 
 
 ### Получение достижений (Socket.io)  
-*Получение достижений*
 ![image](https://github.com/user-attachments/assets/b03f5886-7f9f-48ad-b774-4fe32550a08a)
 
 
 ### Главная страница (авторизованный пользователь)  
-*Главная страница (авторизованный пользователь)*
 ![image](https://github.com/user-attachments/assets/7fa8386b-d51d-402b-8056-f1e16944ef2f)
 
 
 ### Страница с модулями  
-*Страница с модулями*
 ![image](https://github.com/user-attachments/assets/b6218bdc-a026-4095-94de-1d2a4620601d)
 
 
 ### Контент одного модуля  
-*Контент одного модуля*
 ![image](https://github.com/user-attachments/assets/b198aa80-7be9-43e0-baf6-1c7d378cdc08)
 
 
 ### Видеоурок  
-*Видеоурок*
 ![image](https://github.com/user-attachments/assets/2b569f26-9258-41a3-8f19-48e93135a2b4)
 
 
 ### Страница теста  
-*Страница теста*
 ![image](https://github.com/user-attachments/assets/b66c2c11-58d6-4db3-9af1-1765c4624398)
 
 ---

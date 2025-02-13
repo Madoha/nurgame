@@ -23,7 +23,7 @@ interface UnfinishedCourse {
 interface PopularCourse {
     id: number;
     title: string;
-    price: string;
+    icon: string;
     instructor: string;
     startDate: string;
 }
@@ -68,9 +68,9 @@ interface ActivityCardProps {
 
 const mockCoursesData: CoursesData = {
     completed: 0,
-    inProgress: 0,
-    certificatesEarned: 0,
-    achievements: 1,
+    inProgress: 1,
+    certificatesEarned: 3,
+    achievements: 10,
 };
 
 const mockCoursesDataIcon = {
@@ -83,42 +83,50 @@ const mockCoursesDataIcon = {
 const mockUnfinishedCourses: UnfinishedCourse[] = [
     {
         id: 1,
-        title: "Игра гонка",
+        title: "Борьба против коррупции",
         duration: "72 min",
-        instructor: "Dianne Edwards"
+        instructor: "Учитель"
     },
-    {id: 2, title: "Игра стеклами", duration: "82 min", instructor: "Dianne Edwards"},
-    {id: 3, title: "Игра учитель", duration: "91 min", instructor: "Dianne Edwards"},
+    {id: 2, title: "Борьба против коррупции", duration: "82 min", instructor: "Учитель"},
+    {id: 3, title: "Борьба против коррупции", duration: "91 min", instructor: "Учитель"},
 ];
 
 const mockPopularCourses: PopularCourse[] = [
     {
         id: 1,
-        title: "Digital Marketing Ethics: Navigating the Ethical Landscape",
-        price: "$159",
-        instructor: "Evan Lindsey",
-        startDate: "17 April"
+        title: "Классрум изучение на практике одного из методов коррупции",
+        instructor: "Классрум",
+        startDate: "12 дек",
+        icon: 'https://img.icons8.com/?size=100&id=xmp3ACmFPvtV&format=png&color=000000',
     },
     {
         id: 2,
-        title: "Pay-Per-Click Powerhouse: Crafting Profitable Campaigns",
-        price: "$159",
-        instructor: "Roger Hamilton",
-        startDate: "19 April"
+        title: "Геймифицированный тест",
+        instructor: "Платформа",
+        startDate: "12 дек",
+        icon: 'https://img.icons8.com/?size=100&id=8eWv080qqZw7&format=png&color=000000',
     },
 ];
 
 const mockCommunityGroups: CommunityGroup[] = [
-    {id: 1, name: "We The Feast", members: 48, privacy: "Private"},
-    {id: 2, name: "We The Feast", members: 26, privacy: "Public"},
-    {id: 3, name: "We The Feast", members: 48, privacy: "Private"},
-    {id: 4, name: "We The Feast", members: 26, privacy: "Public"},
+    {id: 1, name: "Группа 1", members: 10, privacy: "Открытая"},
+    {id: 2, name: "Группа 2", members: 8, privacy: "Открытая"},
+    {id: 3, name: "Группа 3", members: 6, privacy: "Открытая"},
 ];
 
 const mockActivity: Activity[] = [
-    {id: 1, description: "2 assignments pending of eCommerce Basics", action: "Send A"},
-    {id: 2, description: "2 assignments pending of eCommerce Basics", action: "Send A"},
+    {id: 1, description: "Вы получили дополнительные монетки", action: "Отправить Сообщение"},
+    {id: 2, description: "У вас увеличился стрик. Продолжайте в том же духе", action: "Отправить Сообщение"},
 ];
+
+interface Achiv {
+    isCourseCompleted: boolean,
+    isCourseCompletedProgress: number,
+    userCompletedModules: number,
+    userCompletedModulesProgress: number,
+    userAchievements: number,
+    userAchievementsProgress: number
+}
 
 // Main Dashboard Component
 const Home: React.FC = () => {
@@ -131,6 +139,7 @@ const Home: React.FC = () => {
     const [showDropdown, setShowDropdown] = useState(false);
     const [showSignOutModal, setShowSignOutModal] = useState(false);
     const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const [achivData, setAchivData] = useState<Achiv>({} as Achiv);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -151,7 +160,10 @@ const Home: React.FC = () => {
 
                     // Fetch user data from your API using axiosConfig
                     const userResponse = await axiosConfig.get(`/user/${decodedToken.id}`);
+                    const userResponse1 = await axiosConfig.get(`/user/${decodedToken.id}/progress`);
                     setUserData(userResponse.data.data);
+                    setAchivData(userResponse1.data);
+                    console.log(userResponse1.data);
                     // Fetch other necessary data
                     // const coursesResponse = await axiosConfig.get("/courses");
                     // const unfinishedResponse = await axiosConfig.get("/unfinishedCourses");
@@ -192,51 +204,42 @@ const Home: React.FC = () => {
                         <div className="dashboard__part1-welcome">
                             {isLoggedIn && userData ? (
                                 <>
-                                    <p>Hello {userData.firstName} {userData.lastName}, Welcome back.</p>
-                                    <h1>Your Dashboard today</h1>
+                                    <p>Здравствуйте {userData.firstName} {userData.lastName}, Добро пожаловать
+                                        обратно.</p>
+                                    <h1>Ваша информационная панель сегодня</h1>
                                 </>
                             ) : (
                                 <>
-                                    <p>Hello, Welcome to our platform.</p>
-                                    <h1>Please Login or Register</h1>
+                                    <p>Здравствуйте, добро пожаловать на нашу платформу.</p>
+                                    <h1>Пожалуйста, войдите в систему или зарегистрируйтесь</h1>
                                 </>
                             )}
                         </div>
                         <div className="dashboard__part1-profile">
                             {isLoggedIn && userData ? (
-                                <div onClick={toggleDropdown}>
+                                <div>
                                     <img src={userData.avatarUrl} alt="Profile"/>
-                                    <span>{userData.username}</span>
-                                    {showDropdown && (
-                                        <div className={`dashboard__dropdown ${showDropdown ? 'show' : ''}`}>
-                                            <a href="/profile">
-                                                <button>Profile</button>
-                                            </a>
-                                            <button onClick={() => setShowSignOutModal(true)}>Sign Out</button>
-                                        </div>
-                                    )}
                                 </div>
                             ) : (
-                                <div className="dashboard__auth-buttons">
-                                    <button onClick={handleLoginRedirect}>Login</button>
-                                    <button onClick={handleRegisterRedirect}>Register</button>
+                                <div>
                                 </div>
-                            )}
-                            {/* Pass the modal control state */}
-                            <SignOut showModal={showSignOutModal} setShowModal={setShowSignOutModal} />
-                        </div>
+                            )}</div>
                     </div>
 
                     <div className="dashboard__part1-stats">
-                        {coursesData && (
+                        {achivData && (
                             <>
-                                <StatCard title="Законченные модули" count={coursesData.completed} progress={0}
+                                <StatCard title="Пройденные курсы" count={achivData.isCourseCompleted}
+                                          progress={achivData.isCourseCompletedProgress}
                                           icon={mockCoursesDataIcon.icon1}/>
-                                <StatCard title="Модули в прогрессе" count={coursesData.inProgress} progress={0}
+                                <StatCard title="Текущие модули" count={achivData.userCompletedModules}
+                                          progress={achivData.userCompletedModulesProgress}
                                           icon={mockCoursesDataIcon.icon2}/>
-                                <StatCard title="Получен сертификат" count={coursesData.certificatesEarned}
-                                          progress={0} icon={mockCoursesDataIcon.icon3}/>
-                                <StatCard title="Достижения" count={coursesData.achievements} progress={10}
+                                <StatCard title="Полученные сертификаты" count={achivData.isCourseCompleted}
+                                          progress={achivData.isCourseCompletedProgress}
+                                          icon={mockCoursesDataIcon.icon3}/>
+                                <StatCard title="Достижения" count={achivData.userAchievements}
+                                          progress={achivData.userAchievementsProgress}
                                           icon={mockCoursesDataIcon.icon4}/>
                             </>
                         )}
@@ -247,8 +250,7 @@ const Home: React.FC = () => {
                     <div className="dashboard__part2-header">
                         <div className="dashboard__part2-section">
                             <div className="dashboard__part2-left">
-                                <h3>Наши мини игры</h3>
-                                <button>See All</button>
+                                <h3>Ваши Незаконченные курсы</h3>
                             </div>
                             <div className="dashboard__part2-course-list">
                                 {unfinishedCourses.map(course => (
@@ -259,7 +261,7 @@ const Home: React.FC = () => {
 
                         <div className="dashboard__part2-section">
                             <div className="dashboard__part2-right">
-                                <h3>My Community</h3>
+                                <h3>Мое сообщество</h3>
                                 <div className="dashboard__part2-community-list">
                                     {communityGroups.map(group => (
                                         <CommunityCard key={group.id} group={group}/>
@@ -274,8 +276,7 @@ const Home: React.FC = () => {
                     <div className="dashboard__part3-header">
                         <div className="dashboard__part3-section1">
                             <div className="dashboard__part3-left">
-                                <h3>Popular Courses</h3>
-                                <button>See All</button>
+                                <h3>Популярные игры</h3>
                             </div>
                             <div className="dashboard__part3-course-list">
                                 {popularCourses.map(course => (
@@ -285,7 +286,7 @@ const Home: React.FC = () => {
                         </div>
                         <div className="dashboard__part3-section2">
                             <div className="dashboard__part3-right">
-                                <h3>Activity</h3>
+                                <h3>Уведомления</h3>
                                 <div className="dashboard__part3-activity-list">
                                     {activities.map(activity => (
                                         <ActivityCard key={activity.id} activity={activity}/>
@@ -326,10 +327,10 @@ const StatCard: React.FC<StatCardProps> = ({icon, title, count, progress}) => (
 const UCourseCard: React.FC<UCourseCardProps> = ({ucourse}) => (
     <div className="course-card">
         <div className="course-card__content">
-            {/* <img src="src/assets/images/yourAva.svg" alt="avatar"/> */}
-            {/* <p className="course-card__instructor">{ucourse.instructor}</p> */}
+            <img src="src/assets/images/yourAva.svg" alt="avatar"/>
+            <p className="course-card__instructor">{ucourse.instructor}</p>
             <p className="course-card__details">
-                Длительность {ucourse.duration}
+                {ucourse.duration}
             </p>
         </div>
         <div className="course-card__description">
@@ -341,29 +342,26 @@ const UCourseCard: React.FC<UCourseCardProps> = ({ucourse}) => (
 const PCourseCard: React.FC<PCourseCardProps> = ({pcourse}) => (
     <div className="pcourse-card">
         <div className="pcourse-card__title">
-            <img src="src/assets/images/ava.svg" alt="Logo"/>
+            <img style={{width: '4rem'}} src={pcourse.icon} alt="Logo"/>
             <div className="pcourse-card__content">
                 <p className="pcourse-card__instructor">{pcourse.instructor}</p>
                 <p className="pcourse-card__details">
                     {pcourse.startDate}
                 </p>
-                <p className="pcourse-card__price">
-                    {pcourse.price}
-                </p>
+                <div className="pcourse-card__description">
+                    <p className="pcourse-card__title">{pcourse.title}</p>
+                </div>
             </div>
-        </div>
-        <div className="pcourse-card__description">
-            <p className="pcourse-card__title">{pcourse.title}</p>
         </div>
     </div>
 );
 
 const CommunityCard: React.FC<CommunityCardProps> = ({group}) => (
     <div className="community-card">
-        <img src="src/assets/images/ava.svg" alt="Logo"/>
+        <img src="https://img.icons8.com/?size=100&id=ExJa6OpPWj99&format=png&color=000000" alt="Logo"/>
         <div className="community-card__content">
             <h5 className="community-card__name">{group.name}</h5>
-            <p className="community-card__members">{group.members} Members</p>
+            <p className="community-card__members">{group.members} участников</p>
         </div>
         <p className="community-card__privacy">{group.privacy}</p>
     </div>
@@ -376,8 +374,7 @@ const ActivityCard: React.FC<ActivityCardProps> = ({activity}) => (
             <p className="activity-card__description">{activity.description}</p>
         </div>
         <div className="activity-card__btns">
-            <button className="activity-card__action1">Dismiss</button>
-            <button className="activity-card__action2">Send Activity</button>
+            <button className="activity-card__action2">Скрыть уведомление</button>
         </div>
     </div>
 );

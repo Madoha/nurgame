@@ -40,52 +40,46 @@ function Register() {
     return (
         <div className="register">
             <div className="register__wrapper">
-                <div className="register__text">
-                    <a href="/" className="register__text-title">
-                        <img src="src/assets/images/nurgameLogo.png" alt="Logo" style={{ width: '10rem' }}/>
-                    </a>
-                    <h1>India's First eCommerce</h1>
-                    <h2>and Applied Marketing Academy</h2>
-                    <p>
-                        Industry backed programs designed by professionals to accelerate your digital career.
-                    </p>
+                <div className="register__text" style={{ marginTop: '10rem' }}>
+                    <h1 style={{ fontSize: '1.8rem' }}>Объединенные против коррупции</h1>
+                    <p>Коррупция – глобальная проблема, требующая глобальных решений. Давайте сотрудничать с другими странами, чтобы создать международную сеть противодействия коррупции.</p>
                 </div>
 
                 <form className="register__form" onSubmit={handleSubmit}>
                     <div className="register__form-wrapper">
                         <div className="register__form-title">
-                            <img src="src/assets/images/nurgameLogo.png" alt="Logo"/>
-                            <h1>Learner Register</h1>
-                            <p>{step === 1 ? "Step 1: Basic Information" : "Step 2: Account Details"}</p>
+                            <img src="src/assets/images/nurgameLogo.png" alt="Logo" />
+                            <h1>Регистрация ученика</h1>
+                            <p>{step === 1 ? "Первый шаг: Базовая информация" : "Второй шаг: Детали аккаунта"}</p>
                         </div>
 
 
                         {step === 1 && (
                             <div className="register__form-step1">
                                 <div className="register__form-item">
-                                    <span className="register__form-item-text">Firstname</span>
+                                    <span className="register__form-item-text">Имя</span>
                                     <input
                                         type="text"
                                         name="firstName"
-                                        placeholder="First Name"
+                                        placeholder="Введите ваша имя"
                                         value={user.firstName}
                                         onChange={handleChange}
                                         required
                                     />
-                                    <span className="register__form-item-text">Lastname</span>
+                                    <span className="register__form-item-text">Фамилия</span>
                                     <input
                                         type="text"
                                         name="lastName"
-                                        placeholder="Last Name"
+                                        placeholder="Ваша фамилия"
                                         value={user.lastName}
                                         onChange={handleChange}
                                         required
                                     />
-                                    <span className="register__form-item-text">Username</span>
+                                    <span className="register__form-item-text">Имя пользователя</span>
                                     <input
                                         type="text"
                                         name="username"
-                                        placeholder="Username"
+                                        placeholder="Введите имя пользователя"
                                         value={user.username}
                                         onChange={handleChange}
                                         required
@@ -93,7 +87,7 @@ function Register() {
                                 </div>
                                 <div className="register__form-navigation">
                                     <button type="button" onClick={handleNext}>
-                                        Submit
+                                        Регистрация
                                     </button>
                                 </div>
                             </div>
@@ -116,36 +110,36 @@ function Register() {
                                 </svg>
                             </span>
                                 <div className="register__form-item">
-                                    <span className="register__form-item-text">Email ID</span>
+                                    <span className="register__form-item-text">Почта</span>
                                     <input
                                         type="email"
                                         name="email"
-                                        placeholder="Email"
+                                        placeholder="Ваша почта"
                                         value={user.email}
                                         onChange={handleChange}
                                         required
                                     />
-                                    <span className="register__form-item-text">Password</span>
+                                    <span className="register__form-item-text">Пароль</span>
                                     <input
                                         type="password"
                                         name="password"
-                                        placeholder="Password"
+                                        placeholder="Введите ваш пароль"
                                         value={user.password}
                                         onChange={handleChange}
                                         required
                                     />
-                                    <span className="register__form-item-text">Confirm Password</span>
+                                    <span className="register__form-item-text">Подтвердите пароль</span>
                                     <input
                                         type="password"
                                         name="confirmPassword"
-                                        placeholder="Confirm Password"
+                                        placeholder="Подтвердите ваш пароль"
                                         value={user.confirmPassword}
                                         onChange={handleChange}
                                         required
                                     />
                                 </div>
                                 <div className="register__form-navigation">
-                                    <button type="submit">Submit</button>
+                                    <button type="submit">Создать аккаунт</button>
                                 </div>
                             </div>
                         )}
@@ -153,9 +147,9 @@ function Register() {
 
                     <div className="register__form-link">
                         <p className="register__form-link-text">
-                            Already have an account?
+                            Уже есть аккаунт?
                             <NavLink className="register__form-link-text-nav" to={Links.login}>
-                                Login
+                                Войти
                             </NavLink>
                         </p>
                     </div>

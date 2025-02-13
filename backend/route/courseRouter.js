@@ -15,6 +15,7 @@ const {
     getModules,
     getModuleLessons,
     openQuestionAnswerCheck,
+    isAllowedToCompleteCourse,
     getQuestion,
     getProgress
 } = require('../controllers/courseController');
@@ -54,6 +55,8 @@ router.route('/:courseId/modules/:moduleId/tests')
     .get(getModuleTests);
 
 router.route('/:courseId/progress').get(getProgress)
+
+router.route('/:courseId/can-complete').get(authentication, isAllowedToCompleteCourse);
 
 router.route('/:courseId/modules/:moduleId/tests/:questionId/questions').get(getQuestion);
 

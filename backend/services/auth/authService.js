@@ -124,7 +124,7 @@ class AuthService {
 
         await currentUser.save();
 
-        await sendPasswordResetEmail(currentUser.email, `${process.env.CLIENT_URL}/api/v1/auth/reset-password/${resetToken}`);
+        await sendPasswordResetEmail(currentUser.email, `${process.env.CLIENT_URL}/api/auth/reset-password/${resetToken}`);
     }
 
     async resetPassword(token, newPassword, confirmNewPassword){
@@ -150,6 +150,8 @@ class AuthService {
         const currentUser = await user.findByPk(userId);
         if(await isGoogleProvider(currentUser)) throw new AppError('You dont have access to this function', 400); 
         const isPasswordCorrect = await bcrypt.compare(oldPassword, currentUser.password);
+        console.log('fsfs', isPasswordCorrect)
+        console.log(newPassword, confirmNewPassword)
         if (!isPasswordCorrect || newPassword != confirmNewPassword) throw new AppError('Password in correct or does not match', 401);
 
         const hashedPassword = await bcrypt.hash(newPassword, 10);

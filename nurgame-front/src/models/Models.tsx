@@ -10,14 +10,18 @@ export const Http = {
 };
 
 export const Links = {
+    contacts: "/contacts",
+    about: "/about",
     login: "/login",
     register: "/register",
     profile: "/profile",
     forgotPassword: "/forgot-password",
     home: "/",
     courses: "/courses",
+    modules: "/modules",
     lesson: "/course/3/module/:moduleId/lesson/:lessonId",
     test: "/course/3/module/:moduleId/tests",
+    resetPassword: "/reset-password/:token",
 };
 
 export interface IUser {
@@ -29,6 +33,10 @@ export interface IUser {
     confirmPassword: string,
     roleName: string,
     avatarUrl: string,
+}
+
+export interface IForgotPassword {
+    email: string,
 }
 
 export interface IChangePassword {

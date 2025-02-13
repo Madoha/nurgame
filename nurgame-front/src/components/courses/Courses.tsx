@@ -1,7 +1,6 @@
-import { Link } from "react-router-dom";
-import { useEffect, useState } from "react";
-import { Course } from "../../models/Models.tsx";
-import Graph from "./Graph.tsx";
+import {Link} from "react-router-dom";
+import {useEffect, useState} from "react";
+import {Course} from "../../models/Models.tsx";
 import axiosConfig from "../../api/axiosConfig.ts";
 
 const Courses = () => {
@@ -16,7 +15,6 @@ const Courses = () => {
     useEffect(() => {
         const fetchCourses = async () => {
             try {
-                axiosConfig.defaults.headers.common["ngrok-skip-browser-warning"] = "true";
                 const response = await axiosConfig.get("/course/3/");
                 const data = response.data;
 
@@ -36,11 +34,9 @@ const Courses = () => {
             const token = localStorage.getItem('authToken');
             if (!token) throw new Error('No authentication token found');
 
-            axiosConfig.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-
             // Send GET request to complete the course
             const response = await axiosConfig.get(
-                "http://localhost:4001/api/course/3/complete"
+                "https://c273-5-34-4-103.ngrok-free.app/api/course/3/complete"
             );
 
             if (response.status === 200) {
@@ -119,7 +115,31 @@ const Courses = () => {
                             {courseCompleted ? "Course Completed" : "Закончить курс"}
                         </button>
                     </div>
-                    
+                    <div className="courses__wrapper-information-xp">
+                        <div className="courses__wrapper-information-xp-progressBar">
+                            <div className="courses__wrapper-information-xp-progressBar-title">
+                                <h1>XP Progress</h1>
+                                <a>EDIT GOAL</a>
+                            </div>
+                            <div className="courses__wrapper-information-xp-progressBar-bar">
+                                <img src="src/assets/images/xpChest.svg" alt=""/>
+                                <div className="courses__wrapper-information-xp-progressBar-bar-progress">
+                                    <p>Daily Goal</p>
+                                    <div className="courses__wrapper-information-xp-progressBar-bar-progress-t">
+                                        <div
+                                            className="courses__wrapper-information-xp-progressBar-bar-progress-bar"
+                                            style={{
+                                                "--progress-width": `${progressPercentage}%`,
+                                            }}
+                                        ></div>
+                                        <p>
+                                            {currentXP}/{totalXP}XP
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

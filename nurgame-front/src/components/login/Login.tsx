@@ -63,37 +63,33 @@ const Login = () => {
     return (
         <div className="login">
             <div className="login__wrapper">
-                <div className="login__text">
-                    <a href="/" className="login__text-title">
-                        <img src="src/assets/images/nurgameLogo.png" alt="Logo" style={{ width: '10rem' }}/>
-                    </a>
-                    <h1>Fight against corruption</h1>
-                    <h2>and learning Academy</h2>
-                    <p>Industry backed programs designed by professionals to accelerate your digital career.</p>
+                <div className="login__text" style={{ marginTop: '8rem' }}>
+                    <h1 style={{ fontSize: '1.8rem' }}>Коррупция: цена слишком высока</h1>
+                    <p>Коррупция приводит к бедности, неравенству и подрывает доверие к государству. Давайте объединим усилия, чтобы построить общество, свободное от коррупции.</p>
                     {error && <p className="login__error">{error}</p>}
                 </div>
                 <form className="login__form" onSubmit={handleSubmit}>
                     <div className="login__form-wrapper">
                         <div className="login__form-title">
                             <img src="src/assets/images/nurgameLogo.png" alt="Logo" />
-                            <h1>Learner Login</h1>
-                            <p>Sign In to your Account</p>
+                            <h1>Логин ученика</h1>
+                            <p>Войдите в аккаунт</p>
                         </div>
                         <div className="login__form-item">
-                            <span className="login__form-item-text">Email ID</span>
+                            <span className="login__form-item-text">Почта</span>
                             <input
                                 type="email"
                                 name="email"
-                                placeholder="Enter your Email ID"
+                                placeholder="Ваша почта"
                                 value={credentials.email}
                                 onChange={handleChange}
                                 required
                             />
-                            <span className="login__form-item-text">Password</span>
+                            <span className="login__form-item-text">Пароль</span>
                             <input
                                 type="password"
                                 name="password"
-                                placeholder="Enter your Password"
+                                placeholder="Введите ваш пароль"
                                 value={credentials.password}
                                 onChange={handleChange}
                                 required
@@ -102,21 +98,21 @@ const Login = () => {
                         <div className="login__form-passwords">
                             <label className="login__form-passwords-check">
                                 <input type="checkbox" />
-                                <span>Remember Me</span>
+                                <span>Запомнить меня</span>
                             </label>
                             <div className="login__form-passwords-forgot" onClick={handleForgotPassword}>
-                                Forgot Password
+                                Забыл пароль
                             </div>
                         </div>
                         <div className="login__form-submit">
-                            <button type="submit">Login</button>
+                            <button type="submit">Войти</button>
                             {error && <p className="error">{error}</p>}
                         </div>
                         <div className="login__form-link">
                             <p className="login__form-link-text">
-                                Do not have an account?{' '}
+                                Хотите создать аккаунт?{' '}
                                 <NavLink className="login__form-link-text-nav" to={Links.register}>
-                                    Register
+                                    Регистрация
                                 </NavLink>
                             </p>
                         </div>

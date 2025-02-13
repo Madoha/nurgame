@@ -1,12 +1,11 @@
 import React from "react";
 import { Outlet } from "react-router-dom";
-import Header from "./header/Header.tsx";
-
+import HeaderNew from "./header/HeaderNew.tsx";
 
 const Layout: React.FC = () => {
     return (
-        <div className="dashboardHome">
-            <Header />
+        <div className={"pagesConfig"}>
+            <HeaderNew />
             <main>
                 <Outlet />
             </main>

@@ -209,9 +209,12 @@ const getStarted = catchAsync(async (req, res, next) => {
         });
     }
 
+    const totalModules = await courseModule.findAll({where: { courseId }})
+
     await userCourseProgress.create({
         userId,
-        courseId
+        courseId,
+        totalModules: totalModules.length
     });
 
     return res.status(200).json({ message: 'Course started successfully' });
@@ -357,12 +360,13 @@ const completeCourse = catchAsync(async (req, res, next) => {
 
     if (!currentProgress) return next(new AppError('please start the course and complete all modules', 400));
 
-    if (currentProgress.completedModules.length !== 4) return next(new AppError('not allowed', 400));
+    // if (currentProgress.completedModules.length !== currentProgress.totalModules) return next(new AppError('not allowed', 400));
 
     // todo coins course migrations
     const userScore = currentProgress.score;
     // const allScoreCount = await getMaxScoreForCourse(courseId);
-    const allScoreCount = 44;
+    const allScoreCount = (await question.findAll()).length;
+    // const allScoreCount = 44;
     const leastScore = allScoreCount * 0.8;
     const coinsEarned = currentProgress.coinsEarned;
     currentUser.coins += coinsEarned;
@@ -390,48 +394,83 @@ const completeCourse = catchAsync(async (req, res, next) => {
 
     await currentUser.save();
 
-    const doc = new PDFDocument();
+    const doc = new PDFDocument({ size: 'A4', margins: { top: 50, left: 50, right: 50, bottom: 50 } });
 
-// Путь для папки с сертификатами
-const certificatesDir = path.join(__dirname, '../../certificates');
+    const certificatesDir = path.join(__dirname, '../certificates');
 
-// Проверка и создание папки, если она не существует
-if (!fs.existsSync(certificatesDir)) {
-    fs.mkdirSync(certificatesDir, { recursive: true });
-}
+    if (!fs.existsSync(certificatesDir)) {
+        fs.mkdirSync(certificatesDir, { recursive: true });
+    }
 
-// Путь для сохранения сертификата
-const certificatePath = path.join(certificatesDir, `certificate_${currentUser.id}_${courseId}.pdf`);
+    const certificatePath = path.join(certificatesDir, `certificate_${courseId}_${userId}.pdf`);
 
-// Поток для записи PDF
-const writeStream = fs.createWriteStream(certificatePath);
-writeStream.on('error', (err) => {
-    console.error('Error writing the PDF:', err);
-});
+    const writeStream = fs.createWriteStream(certificatePath);
 
-doc.pipe(writeStream);
+    writeStream.on('error', (err) => {
+        console.error('Ошибка при записи PDF:', err);
+    });
 
-// Функция для безопасного центрирования текста
-function drawCenteredText(doc, text, fontSize, y) {
-    const textWidth = doc.widthOfString(text);
-    const pageWidth = doc.page.width;
-    const x = (pageWidth - textWidth) / 2;  // Вычисление X для центрирования текста
+    doc.pipe(writeStream);
 
-    doc.fontSize(fontSize).text(text, x, y);
-}
+    /**
+     * Центрированное отображение текста в документе
+     * @param {PDFDocument} doc - Экземпляр PDF-документа
+     * @param {string} text - Текст для отображения
+     * @param {number} fontSize - Размер шрифта
+     * @param {number} y - Координата Y для размещения текста
+     */
+    function drawCenteredText(doc, text, fontSize, y) {
+        doc.fontSize(fontSize).text(text, 0, y, { align: 'center', width: doc.page.width });
+    }
 
-// Добавляем текст в сертификат
-doc.fontSize(25);
-drawCenteredText(doc, 'Certificate of completion of the course', 25, 100);
-doc.moveDown();
-drawCenteredText(doc, `Congratulations, ${currentUser.firstName} ${currentUser.lastName}!`, 20, 140);
-doc.moveDown();
-drawCenteredText(doc, `You have successfully completed the course: fight agains corruption`, 18, 180);
-doc.moveDown();
-drawCenteredText(doc, `Completion date: ${new Date().toLocaleDateString()}`, 12, 220);
+    const backgroundPath = path.join(__dirname, '../../certificates/cert-bg.png');
+    if (fs.existsSync(backgroundPath)) {
+        doc.image(backgroundPath, 0, 0, { width: doc.page.width, height: doc.page.height });
+    }
 
-// Завершаем создание документа
-doc.end();
+    const borderPadding = 20;
+    doc.rect(borderPadding, borderPadding, doc.page.width - 2 * borderPadding, doc.page.height - 2 * borderPadding)
+    .strokeColor('#000')
+    .lineWidth(2)
+    .stroke();
+
+    const lineSpacing = 40;
+    let currentY = 200;
+
+    try {
+        drawCenteredText(doc, 'Certificate of Completion', 30, currentY);
+
+        currentY += lineSpacing + 20;
+        drawCenteredText(doc, `Congratulations, ${currentUser.firstName} ${currentUser.lastName}`, 20, currentY);
+
+        currentY += lineSpacing;
+        drawCenteredText(doc, `You have successfully completed the course:`, 18, currentY);
+
+        currentY += lineSpacing;
+        drawCenteredText(doc, 'Fight Against Corruption', 18, currentY);
+
+        currentY += lineSpacing;
+        drawCenteredText(doc, `Completion Date: ${new Date().toLocaleDateString()}`, 14, currentY);
+
+        currentY += lineSpacing + 50;
+        drawCenteredText(doc, 'Authorized Signature', 12, currentY - 5);
+        drawCenteredText(doc, 'Nurgame devs', 12, currentY + 15);
+        doc.moveTo(doc.page.width / 2 - 100, currentY + 30).lineTo(doc.page.width / 2 + 100, currentY + 30).stroke();
+
+        const stampPath = path.join(__dirname, '../../certificates/pechat.png');
+        if (fs.existsSync(stampPath)) {
+            const stampWidth = 100;
+            const stampHeight = 100;
+            const stampX = doc.page.width - stampWidth - 50;
+            const stampY = doc.page.height - stampHeight - 150;
+            doc.image(stampPath, stampX, stampY, { width: stampWidth, height: stampHeight });
+        }
+
+    } catch (err) {
+        console.error('Ошибка при добавлении текста в PDF:', err);
+    }
+
+    doc.end();
 
     return res.json({status: true, score: result.score, coins: coinsEarned})
 });
@@ -440,6 +479,20 @@ const openQuestionAnswerCheck = catchAsync(async (req, res, next) => {
     const { courseId, moduleId, testId, questionId } = req.params;
     const userId = req.user.id;
     // todo gemini api open question
+});
+
+const isAllowedToCompleteCourse = catchAsync(async (req, res, next) => {
+    const userId = req.user.id;
+    const { courseId } = req.params;
+
+    const progress = await userCourseProgress.findOne({where: { userId, courseId }});
+    if (!progress) res.json({data: false});
+
+    const totalModules = await courseModule.findAll({where: {courseId}});
+
+    if (progress.completedModules.length == totalModules.length) return res.json({data: true});
+
+    return res.json({data: false});
 });
 
 // private methods
@@ -479,6 +532,7 @@ module.exports = {
     getQuestion,
     getUserCourses,
     openQuestionAnswerCheck,
+    isAllowedToCompleteCourse,
     getQuestion,
     getProgress
 };

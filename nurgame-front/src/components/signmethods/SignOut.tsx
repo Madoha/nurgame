@@ -35,14 +35,14 @@ const SignOut: React.FC<SignOutProps> = ({showModal, setShowModal}) => {
                 <div className="modal__overlay">
                     <div className="modal">
                         <div className="modal__content">
-                            <h2>Sign Out?</h2>
-                            <p>Are you sure you want to sign out?</p>
+                            <h2>Выйти?</h2>
+                            <p>Вы уверены, что хотите выйти из системы?</p>
                             <div className="modal__content-buttons">
-                                <button className="cancel-button" onClick={() => setShowModal(false)}>
-                                    Cancel
+                                <button className="cancel-button" style={{color: 'black'}} onClick={() => setShowModal(false)}>
+                                    Назад
                                 </button>
                                 <button className="signout-button" onClick={handleSignOut}>
-                                    Sign Out
+                                    Выйти
                                 </button>
                             </div>
                         </div>
